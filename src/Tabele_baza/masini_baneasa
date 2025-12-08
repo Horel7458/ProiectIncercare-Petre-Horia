@@ -1,0 +1,4 @@
+INSERT INTO proiecttw.masini_constanta (id_masina, marca, model, an_fabricatie, pret, imagine) VALUES (1, 'Aston Martin', 'Dbx', 2023, 180000.00, null);
+INSERT INTO proiecttw.masini_constanta (id_masina, marca, model, an_fabricatie, pret, imagine) VALUES (2, 'Rolls Royce', 'Special', 2023, 250000.00, null);
+INSERT INTO proiecttw.masini_constanta (id_masina, marca, model, an_fabricatie, pret, imagine) VALUES (3, 'Mclaren', 'Alibec', 2019, 85000.00, null);
+INSERT INTO proiecttw.masini_constanta (id_masina, marca, model, an_fabricatie, pret, imagine) VALUES (4, 'Maybach', 'Gigi', 2012, 55000.00, null);

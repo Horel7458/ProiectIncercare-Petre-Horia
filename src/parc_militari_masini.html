@@ -1,0 +1,27 @@
+<!DOCTYPE html><html lang="ro"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mașini disponibile - AutoPark Militari</title>
+<style>
+  body{margin:0;font-family:Arial,sans-serif;color:#fff;background:linear-gradient(135deg,#0f0f10,#20232a);min-height:100vh;padding:40px 0;text-align:center}
+  .box{background:rgba(255,255,255,.08);padding:28px;border-radius:16px;max-width:1100px;width:clamp(300px,90vw,1100px);margin:auto}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-top:25px}
+  .car{background:rgba(255,255,255,.12);border-radius:12px;padding:10px;transition:.3s}
+  .car:hover{transform:scale(1.05);background:rgba(255,255,255,.20)}
+  .car img{width:100%;height:160px;object-fit:cover;border-radius:8px}
+  h3{margin:10px 0 8px}
+  .btn{border:1px solid #7fd1ff;background:transparent;color:#7fd1ff;padding:10px 16px;border-radius:10px;cursor:pointer;display:inline-block;margin:0 auto}
+  .btn:hover{background:rgba(127,209,255,.15)}
+</style></head><body>
+  <div class="box">
+    <h1>Mașini disponibile în AutoPark Militari</h1>
+    <div class="grid">
+      <div class="car"><img src="passat.jpg" alt=""><h3>Vw Passat</h3></div>
+      <div class="car"><img src="arteon.jpg" alt=""><h3>Vw Arteon</h3></div>
+      <div class="car"><img src="207.jpg" alt=""><h3>Peugeot 207</h3></div>
+      <div class="car"><img src="yaris.jpg" alt=""><h3>Toyota Yaris</h3></div>
+    </div>
+    <div style="text-align:center;margin-top:20px;">
+      <a class="btn" href="parc_militari.html">Înapoi la parc</a>
+    </div>
+  </div>
+</body></html>

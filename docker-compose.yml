@@ -1,0 +1,38 @@
+services:
+  # Serviciul Web (Apache + PHP)
+  www:
+    build: .
+    container_name: lamp_web_server
+    ports:
+      - "80:80" # daca nu merge port-ul 80, schimbati-l (ex: 8000:80)
+    volumes:
+      - ./src:/var/www/html # in functie de unde va puneti fisierele schimbati numele de folder
+    depends_on:
+      - db
+    networks:
+      - lamp-network
+
+  # Serviciul Bază de Date (MySQL)
+  db:
+    image: mysql:8.0
+    container_name: lamp_database
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: horia # schimbați parola după preferințe
+      MYSQL_DATABASE: proiecttw # numele bazei de date implicite
+      MYSQL_USER: admin # utilizator non-root - puneti ce vreti voi aici (ex: mitzuduh)
+      MYSQL_PASSWORD: horia # parola utilizator non-root
+    ports:
+      - "3309:3306" # modificati dacă portul 3306 este deja folosit (ex: 3310:3306)
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - lamp-network
+
+# Volume persistente (ca să nu pierzi datele din DB dacă ștergi containerul)
+volumes:
+  db_data:
+
+networks:
+  lamp-network:
+    driver: bridge
