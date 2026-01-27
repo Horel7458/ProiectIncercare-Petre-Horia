@@ -1,5 +1,5 @@
 <?php
-require 'config.php'; // conexiune la baza de date
+require 'config.php';
 
 $eroare = '';
 $succes = '';
@@ -8,44 +8,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username     = trim($_POST['username'] ?? '');
     $email        = trim($_POST['email'] ?? '');
     $nume_complet = trim($_POST['nume_complet'] ?? '');
-    $parola       = trim($_POST['parola'] ?? '');
-    $parola2      = trim($_POST['parola2'] ?? '');
+    $parola       = $_POST['parola'] ?? '';
+    $parola2      = $_POST['parola2'] ?? '';
 
-    // Validări simple
     if ($username === '' || $email === '' || $parola === '' || $parola2 === '') {
-        $eroare = 'Te rugăm să completezi toate câmpurile obligatorii.';
+        $eroare = "Completează toate câmpurile obligatorii.";
+    } elseif (strlen($parola) < 6) {
+        $eroare = "Parola trebuie să aibă minim 6 caractere.";
     } elseif ($parola !== $parola2) {
-        $eroare = 'Parolele nu coincid.';
-    } elseif (strlen($parola) < 4) {
-        $eroare = 'Parola trebuie să aibă cel puțin 4 caractere.';
+        $eroare = "Parolele nu coincid.";
     } else {
-        // Verificăm dacă există deja username sau email în DB
-        $stmt = $conn->prepare("SELECT id_utilizator FROM utilizatori WHERE username = ? OR email = ? LIMIT 1");
+        $stmt = $conn->prepare("SELECT id_utilizator FROM utilizatori WHERE username = ? OR email = ?");
         $stmt->bind_param("ss", $username, $email);
         $stmt->execute();
         $rez = $stmt->get_result();
 
-        if ($rez && $rez->num_rows > 0) {
-            $eroare = 'Există deja un cont cu acest nume de utilizator sau email.';
+        if ($rez->num_rows > 0) {
+            $eroare = "Există deja un cont cu acest username sau email.";
         } else {
-            // Totul ok -> inserăm utilizatorul
-            $parola_hash = password_hash($parola, PASSWORD_DEFAULT);
+            $hash = password_hash($parola, PASSWORD_DEFAULT);
 
-            $stmt_insert = $conn->prepare("
+            $stmt2 = $conn->prepare("
                 INSERT INTO utilizatori (username, email, parola, nume_complet)
                 VALUES (?, ?, ?, ?)
             ");
-            $stmt_insert->bind_param("ssss", $username, $email, $parola_hash, $nume_complet);
+            $stmt2->bind_param("ssss", $username, $email, $hash, $nume_complet);
 
-            if ($stmt_insert->execute()) {
-                $succes = 'Cont creat cu succes! Poți merge la pagina de login.';
+            if ($stmt2->execute()) {
+                $succes = "Cont creat cu succes! Te poți autentifica.";
             } else {
-                $eroare = 'A apărut o eroare la salvarea datelor.';
+                $eroare = "Eroare la salvarea contului.";
             }
-
-            $stmt_insert->close();
+            $stmt2->close();
         }
-
         $stmt->close();
     }
 }
@@ -53,137 +48,176 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Înregistrare - Parc Auto</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: url('audi.jpg') no-repeat center center fixed;
-      background-size: cover;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Înregistrare</title>
 
-    .login-container {
-      background: rgba(0, 0, 0, 0.7);
-      padding: 40px;
-      border-radius: 15px;
-      color: white;
-      width: 340px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-    }
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#0f172a,#020617);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
 
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
+.card {
+  width: 360px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(8px);
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0,0,0,.6);
+}
 
-    label {
-      display:block;
-      text-align:left;
-      margin-bottom:4px;
-      font-size:14px;
-    }
+.card h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
 
-    input[type="text"],
-    input[type="email"],
-    input[type="password"] {
-      width: 100%;
-      padding: 10px;
-      margin: 6px 0 14px 0;
-      border: none;
-      border-radius: 5px;
-    }
+label {
+  font-size: 13px;
+  display: block;
+  margin-bottom: 4px;
+}
 
-    button {
-      width: 100%;
-      padding: 10px;
-      background-color: #007bff;
-      border: none;
-      color: white;
-      font-size: 16px;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-top: 5px;
-    }
+input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  margin-bottom: 14px;
+  box-sizing: border-box;
+}
 
-    button:hover {
-      background-color: #0056b3;
-    }
+input:focus {
+  outline: 2px solid #38bdf8;
+}
 
-    .bottom-link {
-      text-align: center;
-      margin-top: 12px;
-      font-size: 14px;
-    }
+button {
+  width: 100%;
+  padding: 11px;
+  background: linear-gradient(135deg,#38bdf8,#2563eb);
+  border: none;
+  color: white;
+  font-weight: bold;
+  border-radius: 10px;
+  cursor: pointer;
+}
 
-    .bottom-link a {
-      color: #00bfff;
-      text-decoration: none;
-    }
+button:hover {
+  opacity: 0.9;
+}
 
-    .bottom-link a:hover {
-      text-decoration: underline;
-    }
+.msg {
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  font-size: 13px;
+  text-align: center;
+}
 
-    .msg {
-      font-size: 13px;
-      margin-bottom: 10px;
-      padding: 8px;
-      border-radius: 6px;
-    }
-    .msg.error {
-      background: rgba(220, 38, 38, 0.2);
-      border: 1px solid #f87171;
-    }
-    .msg.success {
-      background: rgba(22, 163, 74, 0.2);
-      border: 1px solid #4ade80;
-    }
-  </style>
+.error {
+  background: rgba(220,38,38,.25);
+  border: 1px solid #f87171;
+}
+
+.success {
+  background: rgba(22,163,74,.25);
+  border: 1px solid #4ade80;
+}
+
+.small {
+  font-size: 12px;
+  color: #fca5a5;
+  margin-top: -10px;
+  margin-bottom: 10px;
+}
+
+.link {
+  text-align: center;
+  margin-top: 14px;
+  font-size: 14px;
+}
+
+.link a {
+  color: #38bdf8;
+  text-decoration: none;
+}
+
+.link a:hover {
+  text-decoration: underline;
+}
+</style>
 </head>
+
 <body>
-  <div class="login-container">
-    <h2>Înregistrare cont nou</h2>
 
-    <?php if ($eroare): ?>
-      <div class="msg error"><?= htmlspecialchars($eroare) ?></div>
-    <?php endif; ?>
+<div class="card">
+  <h2>Creare cont</h2>
 
-    <?php if ($succes): ?>
-      <div class="msg success"><?= htmlspecialchars($succes) ?></div>
-    <?php endif; ?>
+  <?php if ($eroare): ?>
+    <div class="msg error"><?= htmlspecialchars($eroare) ?></div>
+  <?php endif; ?>
 
-    <form method="post" action="inregistrare.php">
-      <label for="username">Utilizator *</label>
-      <input type="text" id="username" name="username" required
-             value="<?= isset($username) ? htmlspecialchars($username) : '' ?>">
+  <?php if ($succes): ?>
+    <div class="msg success"><?= htmlspecialchars($succes) ?></div>
+  <?php endif; ?>
 
-      <label for="email">Email *</label>
-      <input type="email" id="email" name="email" required
-             value="<?= isset($email) ? htmlspecialchars($email) : '' ?>">
+  <form method="post" onsubmit="return validareParole();">
 
-      <label for="nume_complet">Nume complet</label>
-      <input type="text" id="nume_complet" name="nume_complet"
-             value="<?= isset($nume_complet) ? htmlspecialchars($nume_complet) : '' ?>">
+    <label>Utilizator *</label>
+    <input type="text" name="username" required>
 
-      <label for="parola">Parolă *</label>
-      <input type="password" id="parola" name="parola" required>
+    <label>Email *</label>
+    <input type="email" name="email" required>
 
-      <label for="parola2">Confirmă parola *</label>
-      <input type="password" id="parola2" name="parola2" required>
+    <label>Nume complet</label>
+    <input type="text" name="nume_complet">
 
-      <button type="submit">Creează cont</button>
+    <label>Parolă *</label>
+    <input type="password" id="parola" name="parola" required>
+    <div id="errParola" class="small"></div>
 
-      <div class="bottom-link">
-        Ai deja cont? <a href="index.php">Mergi la login</a>
+    <label>Confirmă parola *</label>
+    <input type="password" id="parola2" name="parola2" required>
+    <div id="errParola2" class="small"></div>
 
-      </div>
-    </form>
-  </div>
+    <button type="submit">Creează cont</button>
+
+    <div class="link">
+      Ai deja cont? <a href="index.php">Mergi la login</a>
+    </div>
+  </form>
+</div>
+
+<script>
+function validareParole() {
+  const p1 = document.getElementById("parola").value;
+  const p2 = document.getElementById("parola2").value;
+  let ok = true;
+
+  document.getElementById("errParola").textContent = "";
+  document.getElementById("errParola2").textContent = "";
+
+  if (p1.length < 6) {
+    document.getElementById("errParola").textContent =
+      "Parola trebuie să aibă minim 6 caractere.";
+    ok = false;
+  }
+
+  if (p1 !== p2) {
+    document.getElementById("errParola2").textContent =
+      "Parolele nu coincid.";
+    ok = false;
+  }
+
+  return ok;
+}
+</script>
+
 </body>
 </html>

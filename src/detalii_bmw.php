@@ -42,12 +42,12 @@
       <div class="dealer">
         <h2>Parc auto: AutoPark Băneasa</h2>
         <p>Expus în Băneasa (București), acces facil și test drive la cerere.</p>
-     <button class="btn ghost" onclick="window.location.href='parc_baneasa.html'">Accesează parcul auto</button>
+     <button class="btn ghost" onclick="window.location.href='parc_baneasa.php'">Accesează parcul auto</button>
       </div>
 
       <div class="actions">
         <button class="btn primary" onclick="alert('Îți mulțumim! Te vom contacta în curând.')">Contactează-ne</button>
-        <button class="btn ghost" onclick="window.location.href='parc_baneasa.html'">Accesează parcul auto</button>
+        <button class="btn ghost" onclick="window.location.href='parc_baneasa.php'">Accesează parcul auto</button>
       </div>
     </div>
   </div>

@@ -1,0 +1,44 @@
+
+/* Buton "↑ Sus" – stil similar cu "Vezi detalii" */
+#goTopBtn{
+	position: fixed;
+	right: 18px;
+	bottom: 18px;
+	z-index: 99999;
+
+	border: none !important;
+	padding: 10px 14px !important;
+	border-radius: 10px !important;
+	cursor: pointer !important;
+
+	background: #007bff !important;
+	color: #fff !important;
+	font-weight: bold;
+	font-size: 14px;
+	line-height: 1;
+
+	box-shadow: 0 10px 24px rgba(0,0,0,.35) !important;
+	transition: transform .2s ease, background .2s ease, opacity .2s ease;
+}
+
+#goTopBtn:hover{
+	background: #0056b3;
+	transform: translateY(-2px);
+}
+
+#goTopBtn:active{
+	transform: translateY(0);
+}
+
+#goTopBtn:focus-visible{
+	outline: 3px solid rgba(127,209,255,.85);
+	outline-offset: 3px;
+}
+
+@media (max-width: 900px){
+	#goTopBtn{
+		right: 12px;
+		bottom: 12px;
+	}
+}
+

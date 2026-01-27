@@ -42,12 +42,12 @@
       <div class="dealer">
         <h2>Parc auto: AutoPark Otopeni</h2>
         <p>Situat lângă aeroport, ideal pentru preluări rapide și test drive pe centură.</p>
-         <button class="btn ghost" onclick="window.location.href='parc_otopeni.html'">Accesează parcul auto</button>
+         <button class="btn ghost" onclick="window.location.href='parc_otopeni.php'">Accesează parcul auto</button>
       </div>
 
       <div class="actions">
         <button class="btn primary" onclick="alert('Îți mulțumim! Te vom contacta în curând.')">Contactează-ne</button>
-       <button class="btn ghost" onclick="window.location.href='parc_otopeni.html'">Accesează parcul auto</button>
+       <button class="btn ghost" onclick="window.location.href='parc_otopeni.php'">Accesează parcul auto</button>
       </div>
     </div>
   </div>

@@ -139,8 +139,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <button type="submit">Login</button>
 
       <div class="signup-link">
-        Nu ai cont? <a href="inregistrare.php">Înregistrează-te</a>
-      </div>
+  Nu ai cont? <a href="inregistrare.php">Înregistrează-te</a>
+</div>
+
+<div style="text-align:center; margin-top:10px;">
+  <a href="manager_login.php" style="color:#00bfff; text-decoration:none; font-size:14px;">
+    Intrare Manager
+  </a>
+</div>
     </form>
   </div>
 </body>

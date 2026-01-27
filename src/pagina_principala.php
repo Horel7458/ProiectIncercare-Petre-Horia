@@ -10,7 +10,7 @@ require 'config.php';
 $mesaj_succes = '';
 $mesaj_eroare = '';
 
-// 1. Procesăm trimiterea formularului de programare
+// 1) Procesăm programarea
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['programare_form'])) {
     $id_utilizator = $_SESSION['id_utilizator'] ?? null;
     $id_parc       = intval($_POST['id_parc'] ?? 0);
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['programare_form'])) {
     }
 }
 
-// 2. Luăm parcurile + managerii lor din baza de date
+// 2) Luăm parcurile + managerii lor
 $parcuri = [];
 $sql = "
     SELECT p.id_parc, p.nume_parc,
@@ -63,350 +63,541 @@ if ($rez && $rez->num_rows > 0) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Parc Auto - Pagina Principală</title>
 
+  <!-- Buton Top (ai zis că îl ai deja) -->
+  <link rel="stylesheet" href="gotop.css?v=2">
+
   <style>
-    body {
-      margin: 0;
+    /*  Setări generale + tipografie
+       */
+    :root{
+      --c-accent:#7fd1ff;
+      --c-bg: rgba(0,0,0,.55);
+      --c-card: rgba(255,255,255,.10);
+      --c-card2: rgba(255,255,255,.08);
+      --c-border: rgba(255,255,255,.14);
+      --c-green: #10b981;
+      --c-green2:#059669;
+      --c-blue:#007bff;
+      --c-blue2:#0056b3;
+      --c-text:#fff;
+      --radius: 16px;
+    }
+
+    html{ scroll-behavior: smooth; }
+
+    body{
+      margin:0;
       font-family: Arial, sans-serif;
+      color: var(--c-text);
       background: url('audi.jpg') no-repeat center center fixed;
       background-size: cover;
-      color: white;
+      min-height:100vh;
+      line-height: 1.5;
+      font-size: 1rem; /* ~16px */
+    }
+
+    /* 
+      Layout cerut: header/nav/main/aside/footer
+        */
+    .page{
+      max-width: 1650px;
+      margin: 0 auto;
+      padding: 16px;
+      display: grid;
+      gap: 20px;
+      grid-template-columns: 280px 1fr 340px;
+      grid-template-areas:
+        "header header header"
+        "nav    main   aside"
+        "footer footer footer";
+      align-items: start;
+    }
+
+    header{
+      grid-area: header;
+      background: var(--c-bg);
+      border: 1px solid var(--c-border);
+      border-radius: var(--radius);
+      padding: 16px;
       text-align: center;
-      min-height: 100vh;
+      box-shadow: 0 18px 40px rgba(0,0,0,.35);
     }
 
-    .content {
-      background: rgba(0, 0, 0, 0.6);
-      padding: 40px;
-      border-radius: 15px;
-      display: inline-block;
-      margin-top: 40px;
-      max-width: 1200px;
+    nav{
+      grid-area: nav;
+      background: var(--c-bg);
+      border: 1px solid var(--c-border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 18px 40px rgba(0,0,0,.30);
     }
 
-    h1 { margin-bottom: 12px; }
+    main{
+      grid-area: main;
+      background: var(--c-bg);
+      border: 1px solid var(--c-border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: 0 18px 40px rgba(0,0,0,.30);
+      text-align:center;
+    }
 
-    .intro {
-      margin: 0 auto 24px;
+    aside{
+      grid-area: aside;
+      background: var(--c-bg);
+      border: 1px solid var(--c-border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 18px 40px rgba(0,0,0,.30);
+      text-align:left;
+    }
+
+    footer{
+      grid-area: footer;
+      background: var(--c-bg);
+      border: 1px solid var(--c-border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      text-align:center;
+      box-shadow: 0 18px 40px rgba(0,0,0,.25);
+    }
+
+    /*
+        Header
+      */
+    .h-title{
+      margin: 0 0 6px;
+      font-size: 1.7rem;
+      letter-spacing:.2px;
+    }
+    .h-sub{
+      margin:0;
+      opacity:.95;
+      font-size: 1rem;
+    }
+
+    /* 
+        Nav 
+       */
+    .nav-title{
+      margin:0 0 10px;
+      font-size: 1.1rem;
+      text-align:center;
+    }
+    .nav-links{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .nav-links a{
+      display:block;
+      text-decoration:none;
+      color: var(--c-accent);
+      border: 1px solid rgba(127,209,255,.45);
+      background: rgba(0,0,0,.20);
+      padding: 10px 12px;
+      border-radius: 12px;
+      transition:.2s;
+      text-align:center;
+      font-weight:bold;
+    }
+    .nav-links a:hover{
+      background: rgba(127,209,255,.12);
+      transform: translateY(-1px);
+    }
+
+    /* 
+        Secțiuni din main
+       */
+    .section-title{
+      margin: 8px 0 10px;
+      font-size: 1.25rem;
+    }
+
+    .intro{
+      margin: 0 auto 18px;
       max-width: 900px;
       opacity: .95;
       line-height: 1.6;
     }
 
-    /* Grid mașini */
-    .cars-grid {
+    /* 
+        CARDURI Produse (Flexbox cerut)
+       */
+    .cards-flex{
+      display:flex;
+      justify-content:center;
+      align-items:stretch;
+      flex-wrap: wrap;
+      gap: 32px;
+      margin: 12px 0 26px;
+    }
+
+    /* Masini: fix 3 coloane  */
+    .cars-grid{
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      max-width: 1200px;
-      margin: 0 auto 36px;
+      grid-template-columns: repeat(3, 270px);
+      gap: 32px;
+      justify-content: center;
+      align-items: stretch;
     }
 
-    .car-card {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 15px;
-      padding: 15px;
-      transition: transform 0.3s, background 0.3s;
+    /* Parcuri: fix 3 coloane */
+    .parks-grid{
+      display: grid;
+      grid-template-columns: repeat(3, 270px);
+      gap: 32px;
+      justify-content: center;
+      align-items: stretch;
     }
 
-    .car-card:hover {
-      transform: scale(1.05);
-      background: rgba(255, 255, 255, 0.2);
+    .card{
+      width: 270px;
+      background: var(--c-card);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 16px;
+      padding: 12px;
+      transition: transform .25s, background .25s;
+      text-align:center;
+      position: relative;
+    }
+    .card:hover{
+      transform: scale(1.04);
+      background: rgba(255,255,255,.16);
+      z-index: 2;
     }
 
-    .car-card img {
+    .card img{
       width: 100%;
       height: 160px;
       object-fit: cover;
+      border-radius: 12px;
+      display:block;
+    }
+
+    .card h3, .card h4{
+      margin: 10px 0 10px;
+    }
+
+    .btn{
+      border:none;
+      padding: 10px 14px;
       border-radius: 10px;
+      cursor:pointer;
+      font-weight:bold;
+      transition:.2s;
     }
 
-    .car-card h3 { margin: 10px 0; }
-
-    .car-card button {
-      background-color: #007bff;
-      border: none;
-      color: white;
-      padding: 10px 15px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background 0.3s;
+    .btn.blue{
+      background: var(--c-blue);
+      color:#fff;
     }
+    .btn.blue:hover{ background: var(--c-blue2); }
 
-    .car-card button:hover { background-color: #0056b3; }
-
-    /* Secțiune parcuri partenere */
-    .section-title { margin: 12px 0 18px; }
-
-    .parks-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 20px;
-      max-width: 1200px;
-      margin: 0 auto 36px;
-    }
-
-    .park-card {
-      display: block;
-      text-decoration: none;
+    /* parcurile */
+    .park-link{
+      text-decoration:none;
       color: inherit;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 15px;
-      padding: 15px;
-      transition: transform 0.3s, background 0.3s;
+      display:block;
     }
 
-    .park-card:hover {
-      transform: scale(1.05);
-      background: rgba(255, 255, 255, 0.2);
+    /* 
+        Aside - Programare
+        */
+    .aside-title{
+      margin: 0 0 10px;
+      font-size: 1.15rem;
+      text-align:center;
     }
 
-    .park-card img {
-      width: 100%;
-      height: 140px;
-      object-fit: cover;
-      border-radius: 10px;
+    .msg{
+      margin: 10px 0 12px;
+      padding: 10px;
+      border-radius: 12px;
+      font-size: .95rem;
+      text-align:center;
+    }
+    .msg.success{
+      background: rgba(22,163,74,.22);
+      border: 1px solid rgba(74,222,128,.75);
+    }
+    .msg.error{
+      background: rgba(220,38,38,.22);
+      border: 1px solid rgba(248,113,113,.75);
     }
 
-    .park-card h4 { margin: 10px 0 0; }
-
-    /* Secțiune programare întâlnire */
-    .appointment-section {
-      margin-top: 30px;
-      padding: 20px;
-      border-radius: 15px;
-      background: rgba(0, 0, 0, 0.5);
-      text-align: left;
+    .appointment-form{
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
     }
-
-    .appointment-section h2 {
-      text-align: center;
-      margin-bottom: 15px;
-    }
-
-    .appointment-form {
-      max-width: 700px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px 20px;
-    }
-
-    .appointment-form label {
-      font-size: 14px;
-      display: block;
+    .appointment-form label{
+      font-size: .9rem;
+      opacity: .95;
       margin-bottom: 4px;
+      display:block;
     }
-
     .appointment-form select,
     .appointment-form input,
-    .appointment-form textarea {
-      width: 100%;
-      padding: 8px;
-      border-radius: 8px;
+    .appointment-form textarea{
+      width:100%;
+      padding: 10px 10px;
+      border-radius: 12px;
       border: none;
       box-sizing: border-box;
     }
-
-    .appointment-form textarea {
+    .appointment-form textarea{
+      min-height: 80px;
       resize: vertical;
-      min-height: 70px;
-      grid-column: span 2;
     }
-
-    .appointment-form .full-width {
-      grid-column: span 2;
+    .appointment-form button{
+      background: var(--c-green);
+      color:#fff;
+      font-size: 1rem;
+      font-weight:bold;
+      padding: 11px 12px;
+      border:none;
+      border-radius: 12px;
+      cursor:pointer;
+      transition:.2s;
+      margin-top: 4px;
     }
+    .appointment-form button:hover{ background: var(--c-green2); }
 
-    .appointment-form button {
-      grid-column: span 2;
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      background-color: #10b981;
-      color: #fff;
-      font-size: 15px;
-      font-weight: bold;
-      margin-top: 5px;
+    /* 
+        Footer links
+       */
+    .footer-links a{
+      color: var(--c-accent);
+      text-decoration:none;
+      font-weight:bold;
     }
+    .footer-links a:hover{ text-decoration: underline; }
 
-    .appointment-form button:hover {
-      background-color: #059669;
-    }
-
-    .msg {
-      margin: 10px auto 15px;
-      max-width: 700px;
-      padding: 8px 10px;
-      border-radius: 8px;
-      font-size: 14px;
-      text-align: center;
-    }
-
-    .msg.success {
-      background: rgba(22, 163, 74, 0.25);
-      border: 1px solid #4ade80;
-    }
-
-    .msg.error {
-      background: rgba(220, 38, 38, 0.25);
-      border: 1px solid #f87171;
-    }
-
-    .logout { margin-top: 25px; }
-
-    .logout a {
-      color: #00bfff;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .logout a:hover { text-decoration: underline; }
-
-    /* =============================
-           TEMA LIGHT GLOBAL
-       ============================= */
-
-    .light-mode {
+    /*
+        Light mode (păstrat)
+        */
+    .light-mode{
       background: #f3f3f3 !important;
-      color: #111 !important;
+      color:#111 !important;
     }
-
-    .light-mode .content,
-    .light-mode .car-card,
-    .light-mode .park-card,
-    .light-mode .appointment-section {
-      background: rgba(0,0,0,0.05) !important;
-      color: #111 !important;
+    .light-mode header,
+    .light-mode nav,
+    .light-mode main,
+    .light-mode aside,
+    .light-mode footer{
+      background: rgba(255,255,255,.85) !important;
+      color:#111 !important;
+      border-color: rgba(0,0,0,.10) !important;
     }
-
-    .light-mode .car-card button {
-      background-color: #005bbb;
+    .light-mode .card{
+      background: rgba(0,0,0,.04) !important;
+      border-color: rgba(0,0,0,.08) !important;
+      color:#111 !important;
+    }
+    .light-mode .nav-links a{
+      background: rgba(0,0,0,.04);
+      border-color: rgba(0,0,0,.12);
+      color:#005bbb;
     }
 
     /* Buton schimbare temă */
-    #themeToggle {
+    #themeToggle{
       position: fixed;
-      top: 20px;
-      right: 20px;
+      top: 18px;
+      right: 18px;
       padding: 8px 14px;
       border-radius: 12px;
-      border: none;
-      cursor: pointer;
-      background: #7fd1ff;
-      color: #000;
-      font-weight: bold;
-      box-shadow: 0 0 10px #0004;
-      transition: 0.3s;
+      border:none;
+      cursor:pointer;
+      background: var(--c-accent);
+      color:#000;
+      font-weight:bold;
+      box-shadow: 0 0 10px rgba(0,0,0,.25);
       z-index: 99999;
+      transition:.2s;
     }
+    #themeToggle:hover{ transform: scale(1.05); }
 
-    #themeToggle:hover {
-      transform: scale(1.05);
-    }
+    /* 
+        RESPONSIVE: 900px
+      */
+    @media (max-width: 900px){
+      body{ font-size: .95rem; }
 
-    @media (max-width: 700px) {
-      .appointment-form {
+      .page{
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "header"
+          "nav"
+          "main"
+          "aside"
+          "footer";
+      }
+
+      /* cardurile devin mai late  */
+      .card{ width: min(360px, 100%); margin: 0 auto; }
+
+      .cars-grid{
         grid-template-columns: 1fr;
       }
-      .appointment-form .full-width,
-      .appointment-form button,
-      .appointment-form textarea {
-        grid-column: span 1;
+
+      .parks-grid{
+        grid-template-columns: 1fr;
       }
+
+      /* imaginile cerință: max-width 100% + height auto pe mobil */
+      .card img{
+        max-width: 100%;
+        height: auto;
+      }
+
+      header{ text-align:center; }
+      .h-title{ font-size: 1.45rem; }
+      .h-sub{ font-size: 1rem; }
+
+      .intro{ font-size: 1rem; line-height: 1.65; }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- BUTON DARK/LIGHT MODE -->
+  <!-- Buton Dark/Light -->
   <button id="themeToggle">Light Mode</button>
 
-  <div class="content">
-    <h1>Bun venit în parcul auto!</h1>
+  <div class="page">
 
-    <p class="intro">
-      Pentru o ofertă mai amplă de mașini accesează parcurile noastre auto partenere.
-    </p>
+    <!-- HEADER -->
+    <header id="top">
+      <h1 class="h-title">Bun venit în parcul auto!</h1>
+      <p class="h-sub">Pentru o ofertă mai amplă de mașini, accesează parcurile noastre auto partenere.</p>
+    </header>
 
-    <!-- Mașinile principale -->
-    <div class="cars-grid">
-      <div class="car-card">
-        <img src="audi.jpg" alt="Audi RS6">
-        <h3>Audi RS6</h3>
-        <button onclick="window.location.href='detalii_audi.php'">Vezi detalii</button>
+    <!-- NAV -->
+    <nav>
+      <div class="nav-title">Meniu</div>
+      <div class="nav-links">
+        <a href="profil.php">Profil</a>
+        <a href="#masini">Mașini</a>
+        <a href="#parcuri">Parcuri partenere</a>
+        <a href="#programare">Programare</a>
+        <a href="logout.php">Ieși din cont</a>
+      </div>
+    </nav>
+
+    <!-- MAIN -->
+    <main>
+      <!-- PRODUSE (masini) - FLEXBOX cerut -->
+      <h2 class="section-title" id="masini">Mașini disponibile</h2>
+
+      <div class="cards-flex cars-grid">
+        <div class="card">
+          <img src="audi.jpg" alt="Audi RS6">
+          <h3>Audi RS6</h3>
+          <button class="btn blue" onclick="window.location.href='detalii_audi.php'">Vezi detalii</button>
+        </div>
+
+        <div class="card">
+          <img src="bmw.jpg" alt="BMW M4 Competition">
+          <h3>BMW M4 Competition</h3>
+          <button class="btn blue" onclick="window.location.href='detalii_bmw.php'">Vezi detalii</button>
+        </div>
+
+        <div class="card">
+          <img src="bugatti.jpg" alt="Bugatti Chiron" onerror="this.onerror=null;this.src='bugatti_chiron.svg';">
+          <h3>Bugatti Chiron</h3>
+          <button class="btn blue" onclick="window.location.href='detalii_bugatti.php'">Vezi detalii</button>
+        </div>
+
+        <div class="card">
+          <img src="mercedes.jpg" alt="Mercedes-AMG GT">
+          <h3>Mercedes-AMG GT</h3>
+          <button class="btn blue" onclick="window.location.href='detalii_mercedes.php'">Vezi detalii</button>
+        </div>
+
+        <div class="card">
+          <img src="porsche.jpg" alt="Porsche 911 Turbo S">
+          <h3>Porsche 911 Turbo S</h3>
+          <button class="btn blue" onclick="window.location.href='detalii_porsche.php'">Vezi detalii</button>
+        </div>
+
+        <div class="card">
+          <img src="laferrari.jpg" alt="Ferrari LaFerrari" onerror="this.onerror=null;this.src='ferrari_laferrari.svg';">
+          <h3>Ferrari LaFerrari</h3>
+          <button class="btn blue" onclick="window.location.href='detalii_laferrari.php'">Vezi detalii</button>
+        </div>
+
+        <div class="card">
+          <img src="lamborghini.jpg" alt="Lamborghini Huracán">
+          <h3>Lamborghini Huracán</h3>
+          <button class="btn blue" onclick="window.location.href='detalii_lamborghini.php'">Vezi detalii</button>
+        </div>
+
+        <div class="card">
+          <img src="ferrari.jpg" alt="Ferrari F8 Tributo">
+          <h3>Ferrari F8 Tributo</h3>
+          <button class="btn blue" onclick="window.location.href='detalii_ferrari.php'">Vezi detalii</button>
+        </div>
+
+        <div class="card">
+          <img src="audir8.jpg" alt="Audi R8" onerror="this.onerror=null;this.src='audi_r8.svg';">
+          <h3>Audi R8</h3>
+          <button class="btn blue" onclick="window.location.href='detalii_audi_r8.php'">Vezi detalii</button>
+        </div>
       </div>
 
-      <div class="car-card">
-        <img src="bmw.jpg" alt="BMW M4">
-        <h3>BMW M4 Competition</h3>
-        <button onclick="window.location.href='detalii_bmw.php'">Vezi detalii</button>
+      <!-- PARCURI - tot flexbox -->
+      <h2 class="section-title" id="parcuri">Parcuri auto partenere</h2>
+
+      <div class="cards-flex parks-grid">
+        <a class="park-link" href="parc_titan.php">
+          <div class="card">
+            <img src="parc_titan.jpg" alt="AutoPark Titan">
+            <h4>AutoPark Titan</h4>
+          </div>
+        </a>
+
+        <a class="park-link" href="parc_baneasa.php">
+          <div class="card">
+            <img src="parc_baneasa.jpg" alt="AutoPark Băneasa">
+            <h4>AutoPark Băneasa</h4>
+          </div>
+        </a>
+
+        <a class="park-link" href="parc_militari.php">
+          <div class="card">
+            <img src="parc_militari.jpg" alt="AutoPark Militari">
+            <h4>AutoPark Militari</h4>
+          </div>
+        </a>
+
+        <a class="park-link" href="parc_otopeni.php">
+          <div class="card">
+            <img src="parc_otopeni.jpg" alt="AutoPark Otopeni">
+            <h4>AutoPark Otopeni</h4>
+          </div>
+        </a>
+
+        <a class="park-link" href="parc_pipera.php">
+          <div class="card">
+            <img src="parc_pipera.jpg" alt="AutoPark Pipera">
+            <h4>AutoPark Pipera</h4>
+          </div>
+        </a>
+
+        <a class="park-link" href="parc_constanta.php">
+          <div class="card">
+            <img src="parc_constanta.jpg" alt="AutoPark Constanța">
+            <h4>AutoPark Constanța</h4>
+          </div>
+        </a>
       </div>
+    </main>
 
-      <div class="car-card">
-        <img src="mercedes.jpg" alt="Mercedes AMG">
-        <h3>Mercedes-AMG GT</h3>
-        <button onclick="window.location.href='detalii_mercedes.php'">Vezi detalii</button>
-      </div>
-
-      <div class="car-card">
-        <img src="porsche.jpg" alt="Porsche 911">
-        <h3>Porsche 911 Turbo S</h3>
-        <button onclick="window.location.href='detalii_porsche.php'">Vezi detalii</button>
-      </div>
-
-      <div class="car-card">
-        <img src="lamborghini.jpg" alt="Lamborghini Huracán">
-        <h3>Lamborghini Huracán</h3>
-        <button onclick="window.location.href='detalii_lamborghini.php'">Vezi detalii</button>
-      </div>
-
-      <div class="car-card">
-        <img src="ferrari.jpg" alt="Ferrari F8">
-        <h3>Ferrari F8 Tributo</h3>
-        <button onclick="window.location.href='detalii_ferrari.php'">Vezi detalii</button>
-      </div>
-    </div>
-
-    <!-- Parcuri auto partenere -->
-    <h2 class="section-title">Parcuri auto partenere</h2>
-
-    <div class="parks-grid">
-      <a class="park-card" href="parc_titan.php">
-        <img src="park_titan.jpg" alt="AutoPark Titan">
-        <h4>AutoPark Titan</h4>
-      </a>
-
-      <a class="park-card" href="parc_baneasa.php">
-        <img src="parc_baneasa.jpg" alt="AutoPark Băneasa">
-        <h4>AutoPark Băneasa</h4>
-      </a>
-
-      <a class="park-card" href="parc_militari.php">
-        <img src="parc_militari.jpg" alt="AutoPark Militari">
-        <h4>AutoPark Militari</h4>
-      </a>
-
-      <a class="park-card" href="parc_otopeni.php">
-        <img src="parc_otopeni.jpg" alt="AutoPark Otopeni">
-        <h4>AutoPark Otopeni</h4>
-      </a>
-
-      <a class="park-card" href="parc_pipera.php">
-        <img src="parc_pipera.jpg" alt="AutoPark Pipera">
-        <h4>AutoPark Pipera</h4>
-      </a>
-
-      <a class="park-card" href="parc_constanta.php">
-        <img src="parc_constanta.jpg" alt="AutoPark Constanța">
-        <h4>AutoPark Constanța</h4>
-      </a>
-    </div>
-
-    <!-- SECȚIUNE PROGRAMARE ÎNTÂLNIRE -->
-    <div class="appointment-section">
-      <h2>Programează o întâlnire</h2>
+    <!-- ASIDE (Programare) -->
+    <aside id="programare">
+      <h2 class="aside-title">Programează o întâlnire</h2>
 
       <?php if ($mesaj_succes): ?>
         <div class="msg success"><?= htmlspecialchars($mesaj_succes) ?></div>
@@ -417,78 +608,81 @@ if ($rez && $rez->num_rows > 0) {
       <?php endif; ?>
 
       <?php if (!empty($parcuri)): ?>
-      <form method="post" class="appointment-form">
-        <input type="hidden" name="programare_form" value="1">
+        <form method="post" class="appointment-form">
+          <input type="hidden" name="programare_form" value="1">
 
-        <!-- Select parc -->
-        <div class="full-width">
-          <label for="id_parc">Alege parcul *</label>
-          <select name="id_parc" id="id_parc" required>
-            <option value="">-- Selectează un parc auto --</option>
-            <?php foreach ($parcuri as $p): ?>
-              <option
-                value="<?= htmlspecialchars($p['id_parc']) ?>"
-                data-manager-id="<?= htmlspecialchars($p['id_manager'] ?? 0) ?>"
-                data-manager-nume="<?= htmlspecialchars($p['nume_manager'] ?? 'Nedefinit') ?>"
-                data-manager-email="<?= htmlspecialchars($p['email'] ?? '-') ?>"
-                data-manager-telefon="<?= htmlspecialchars($p['telefon'] ?? '-') ?>"
-              >
-                <?= htmlspecialchars($p['nume_parc']) ?>
-              </option>
-            <?php endforeach; ?>
-          </select>
-        </div>
+          <div>
+            <label for="id_parc">Alege parcul *</label>
+            <select name="id_parc" id="id_parc" required>
+              <option value="">-- Selectează un parc --</option>
+              <?php foreach ($parcuri as $p): ?>
+                <option
+                  value="<?= htmlspecialchars($p['id_parc']) ?>"
+                  data-manager-id="<?= htmlspecialchars($p['id_manager'] ?? 0) ?>"
+                  data-manager-nume="<?= htmlspecialchars($p['nume_manager'] ?? 'Nedefinit') ?>"
+                  data-manager-email="<?= htmlspecialchars($p['email'] ?? '-') ?>"
+                  data-manager-telefon="<?= htmlspecialchars($p['telefon'] ?? '-') ?>"
+                >
+                  <?= htmlspecialchars($p['nume_parc']) ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
+          </div>
 
-        <!-- Manager (auto-completat) -->
-        <div>
-          <label>Manager asignat</label>
-          <input type="text" id="manager_nume" readonly placeholder="Selectează un parc">
-        </div>
+          <div>
+            <label>Manager asignat</label>
+            <input type="text" id="manager_nume" readonly placeholder="Selectează un parc">
+          </div>
 
-        <div>
-          <label>Email manager</label>
-          <input type="text" id="manager_email" readonly>
-        </div>
+          <div>
+            <label>Email manager</label>
+            <input type="text" id="manager_email" readonly>
+          </div>
 
-        <div>
-          <label>Telefon manager</label>
-          <input type="text" id="manager_telefon" readonly>
-        </div>
+          <div>
+            <label>Telefon manager</label>
+            <input type="text" id="manager_telefon" readonly>
+          </div>
 
-        <!-- ascundem id_manager ca să ajungă în PHP -->
-        <input type="hidden" name="id_manager" id="manager_id_hidden">
+          <input type="hidden" name="id_manager" id="manager_id_hidden">
 
-        <!-- Data și ora -->
-        <div>
-          <label for="data_programare">Data întâlnirii *</label>
-          <input type="date" name="data_programare" id="data_programare" required>
-        </div>
+          <div>
+            <label for="data_programare">Data întâlnirii *</label>
+            <input type="date" name="data_programare" id="data_programare" required>
+          </div>
 
-        <div>
-          <label for="ora_programare">Ora întâlnirii *</label>
-          <input type="time" name="ora_programare" id="ora_programare" required>
-        </div>
+          <div>
+            <label for="ora_programare">Ora întâlnirii *</label>
+            <input type="time" name="ora_programare" id="ora_programare" required>
+          </div>
 
-        <!-- Observații -->
-        <div class="full-width">
-          <label for="observatii">Observații (opțional)</label>
-          <textarea name="observatii" id="observatii" placeholder="Ex: doresc test drive, prefer dimineața etc."></textarea>
-        </div>
+          <div>
+            <label for="observatii">Observații</label>
+            <textarea name="observatii" id="observatii" placeholder="Ex: doresc test drive, prefer dimineața..."></textarea>
+          </div>
 
-        <button type="submit">Trimite programarea</button>
-      </form>
+          <button type="submit">Trimite programarea</button>
+        </form>
       <?php else: ?>
-        <p style="text-align:center;">Momentan nu există parcuri definite în baza de date.</p>
+        <p>Momentan nu există parcuri definite în baza de date.</p>
       <?php endif; ?>
-    </div>
+    </aside>
 
-    <div class="logout">
-      <a href="logout.php">Ieși din cont</a>
-    </div>
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-links">
+        <a href="profil.php">Profil</a> •
+        <a href="manager_login.php">Intrare Manager</a> •
+        <a href="logout.php">Logout</a>
+      </div>
+      <div style="opacity:.9;margin-top:6px;font-size:.95rem;">
+        © <?= date('Y') ?> Parc Auto • Proiect TW
+      </div>
+    </footer>
 
   </div>
 
-  <!-- SCRIPT DARK / LIGHT MODE -->
+  <!-- DARK / LIGHT MODE -->
   <script>
     const toggleBtn = document.getElementById('themeToggle');
     const body = document.body;
@@ -511,7 +705,7 @@ if ($rez && $rez->num_rows > 0) {
     });
   </script>
 
-  <!-- SCRIPT pentru completarea automată a managerului -->
+  <!-- Autocomplete manager în funcție de parc -->
   <script>
     const selectParc = document.getElementById('id_parc');
     const inpNume    = document.getElementById('manager_nume');
@@ -537,10 +731,11 @@ if ($rez && $rez->num_rows > 0) {
 
     if (selectParc) {
       selectParc.addEventListener('change', updateManagerFields);
-      // apelăm o dată la load, în caz că vrei valoare preselectată
       updateManagerFields();
     }
   </script>
 
+  <!-- Buton Top (JS) -->
+  <script src="gotop.js"></script>
 </body>
 </html>

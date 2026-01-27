@@ -42,12 +42,12 @@
       <div class="dealer">
         <h2>Parc auto: AutoPark Constanța</h2>
         <p>Showroom premium în Constanța, aproape de stațiunea Mamaia. Transport și înmatriculare la cheie.</p>
-      <button class="btn ghost" onclick="window.location.href='parc_constanta.html'">Accesează parcul auto</button>
+      <button class="btn ghost" onclick="window.location.href='parc_constanta.php'">Accesează parcul auto</button>
       </div>
 
       <div class="actions">
         <button class="btn primary" onclick="alert('Îți mulțumim! Te vom contacta în curând.')">Contactează-ne</button>
-        <button class="btn ghost" onclick="window.location.href='parc_constanta.html'">Accesează parcul auto</button>
+        <button class="btn ghost" onclick="window.location.href='parc_constanta.php'">Accesează parcul auto</button>
       </div>
     </div>
   </div>

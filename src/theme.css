@@ -1,0 +1,49 @@
+/* Buton schimbare temă */
+#themeToggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: #7fd1ff;
+  color: #000;
+  font-weight: bold;
+  box-shadow: 0 0 10px rgba(0,0,0,0.25);
+  transition: 0.3s;
+  z-index: 99999;
+}
+#themeToggle:hover {
+  transform: scale(1.05);
+}
+
+/* Light Mode – aplicat pe body */
+body.light-mode {
+  background-color: #f3f3f3 !important;
+  color: #111 !important;
+}
+
+/* Dacă ai carduri/box-uri, le luminează */
+body.light-mode .content,
+body.light-mode .box,
+body.light-mode .car-card,
+body.light-mode .park-card,
+body.light-mode .appointment-section,
+body.light-mode .login-container,
+body.light-mode .card {
+  background: rgba(0,0,0,0.05) !important;
+  color: #111 !important;
+}
+
+/* Linkuri în light */
+body.light-mode a {
+  color: #005bbb !important;
+}
+
+/* Butoane în light (dacă ai) */
+body.light-mode button,
+body.light-mode .btn {
+  border-color: #005bbb !important;
+  color: #005bbb !important;
+}

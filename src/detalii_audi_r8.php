@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-  <link rel="stylesheet" href="theme.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Audi RS6 – Detalii</title>
+  <title>Audi R8 – Detalii</title>
   <style>
     body { margin:0; font-family:Arial, sans-serif; color:#fff; background: linear-gradient(135deg, #0f0f10, #20232a); }
     .wrap { max-width: 1000px; margin: 0 auto; padding: 30px; text-align:center; }
     .card { background: rgba(255,255,255,0.08); border-radius: 16px; padding: 25px; }
-    img { width:100%; max-height:420px; object-fit:cover; border-radius:12px; }
+    img { width:100%; max-height:420px; object-fit:cover; border-radius:12px; background: rgba(255,255,255,0.03); }
     h1 { margin: 10px 0 5px; }
     .price { font-size: 22px; margin: 8px 0 12px; color:#7fd1ff; }
     .desc { max-width: 800px; margin: 0 auto 14px; line-height:1.6; opacity:.95; }
@@ -27,31 +26,30 @@
 <body>
   <div class="wrap">
     <div class="card">
-      <img src="audi.jpg" alt="Audi RS6">
-      <h1>Audi RS6</h1>
-      <div class="price">Preț: 139.900 €</div>
-      <p class="desc">Audi RS7 îmbină confortul unui grand tourer cu performanța pură: V8 biturbo, interior premium și tehnologie avansată pentru condusul de zi cu zi și escapade dinamice.</p>
+      <img src="audir8.jpg" alt="Audi R8" onerror="this.onerror=null;this.src='audi_r8.svg';">
+      <h1>Audi R8</h1>
+      <div class="price">Preț: 169.900 €</div>
+      <p class="desc">Audi R8 aduce tehnologie de motorsport într-un supercar utilizabil zi de zi: V10 aspirat, sunet iconic și tracțiune Quattro pentru aderență excelentă în orice condiții.</p>
       <ul>
-        <li>Motor: 4.0 V8 biturbo</li>
-        <li>Putere: 600 CP</li>
-        <li>0–100 km/h: 3.6 s</li>
-        <li>Tracțiune: Quattro</li>
-        <li>Cutie: automată 8 trepte</li>
-        <li>An fabricație: 2022</li>
+        <li>Motor: 5.2 V10 aspirat</li>
+        <li>Putere: 620 CP</li>
+        <li>0–100 km/h: ~3.1 s</li>
+        <li>Tracțiune: Quattro (AWD)</li>
+        <li>Cutie: automată 7 trepte (S tronic)</li>
+        <li>An fabricație: 2020</li>
       </ul>
 
       <div class="dealer">
-        <h2>Parc auto: AutoPark Titan</h2>
-        <p>Disponibil în parcul nostru din zona Titan (București). Verificare tehnică și istoric transparent.</p>
-  <button class="btn ghost" onclick="window.location.href='parc_titan.php'">Accesează parcul auto</button>
+        <h2>Parc auto: AutoPark Otopeni</h2>
+        <p>Disponibil în Otopeni, cu acces rapid din zona aeroportului. Posibilitate test drive și livrare rapidă.</p>
+        <button class="btn ghost" onclick="window.location.href='parc_otopeni.php'">Accesează parcul auto</button>
       </div>
 
       <div class="actions">
         <button class="btn primary" onclick="alert('Îți mulțumim! Te vom contacta în curând.')">Contactează-ne</button>
-      <button class="btn ghost" onclick="window.location.href='parc_titan.php'">Accesează parcul auto</button>
+        <button class="btn ghost" onclick="window.location.href='parc_otopeni.php'">Accesează parcul auto</button>
       </div>
     </div>
   </div>
-  <script src="theme.js"></script>
 </body>
 </html>

@@ -42,12 +42,12 @@
       <div class="dealer">
         <h2>Parc auto: AutoPark Militari</h2>
         <p>Unitatea noastră din Militari (București). Mașină certificată și gata de livrare.</p>
-        <button class="btn ghost" onclick="window.location.href='parc_militari.html'">Accesează parcul auto</button>
+        <button class="btn ghost" onclick="window.location.href='parc_militari.php'">Accesează parcul auto</button>
       </div>
 
       <div class="actions">
         <button class="btn primary" onclick="alert('Îți mulțumim! Te vom contacta în curând.')">Contactează-ne</button>
-        <button class="btn ghost" onclick="window.location.href='parc_militari.html'">Accesează parcul auto</button>
+        <button class="btn ghost" onclick="window.location.href='parc_militari.php'">Accesează parcul auto</button>
       </div>
     </div>
   </div>
